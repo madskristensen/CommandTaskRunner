@@ -86,7 +86,7 @@ namespace CommandTaskRunner
             {
                 FileName = GetExecutableFileName(file),
                 WorkingDirectory = ".",
-                Arguments = "/c " + MakeRelative(configPath, file).Replace("/", "\\"),
+                Arguments = GetArguments(file, configPath),
             };
 
             string taskString = JsonConvert.SerializeObject(cmd, Formatting.Indented);
@@ -104,16 +104,22 @@ namespace CommandTaskRunner
             OpenTaskRunnerExplorer();
         }
 
+        private static string GetArguments(string file, string configPath)
+        {
+            string relative = MakeRelative(configPath, file).Replace("/", "\\");
+
+            if (GetExecutableFileName(file) == "powershell.exe")
+                return $"-ExecutionPolicy Bypass -File {relative}";
+
+            return $"/c {relative}";
+        }
+
         private static string GetExecutableFileName(string file)
         {
             string ext = Path.GetExtension(file).ToLowerInvariant();
 
             switch (ext)
             {
-                case ".cmd":
-                case ".bat":
-                    return "cmd.exe";
-
                 case ".ps1":
                 case ".psm1":
                     return "powershell.exe";

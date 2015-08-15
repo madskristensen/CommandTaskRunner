@@ -55,12 +55,16 @@ namespace CommandTaskRunner
             foreach (CommandTask command in commands.OrderBy(k => k.Name))
             {
                 string cwd = command.WorkingDirectory ?? rootDir;
-                _cache[command.Name] = _cache.ContainsKey(command.Name) ? _cache[command.Name] + 1 : 0;
 
-                TaskRunnerNode task = new TaskRunnerNode($"{command.Name} ({_cache[command.Name]})", true)
+                // Hack to reload command filename and arguments
+                _cache[command.Name] = _cache.ContainsKey(command.Name) ? _cache[command.Name] + 1 : 0;
+                int count = _cache[command.Name];
+                string commandName = command.Name + (count == 0 ? "" : $" ({count})");
+
+                TaskRunnerNode task = new TaskRunnerNode(commandName, true)
                 {
                     Command = new TaskRunnerCommand(cwd, command.FileName, command.Arguments),
-                    Description = command.Arguments
+                    Description = $"Filename:\t {command.FileName}\r\nArguments:\t {command.Arguments}"
                 };
 
                 tasks.Children.Add(task);
