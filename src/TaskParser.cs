@@ -1,9 +1,8 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
-using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
-using System;
+using Newtonsoft.Json.Linq;
 
 namespace CommandTaskRunner
 {
@@ -28,10 +27,10 @@ namespace CommandTaskRunner
                     list.Add(command);
                 }
             }
-            catch
+            catch (Exception ex)
             {
+                Logger.Log(ex);
                 return null;
-                // TODO: Implement logger
             }
 
             return list;

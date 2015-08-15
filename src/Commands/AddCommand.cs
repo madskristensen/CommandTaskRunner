@@ -15,7 +15,7 @@ namespace CommandTaskRunner
     internal sealed class AddCommand
     {
         private readonly Package package;
-        private static string[] _extensions = new[] { ".cmd", ".bat", ".ps1", ".psm1" };
+
 
         private AddCommand(Package package)
         {
@@ -62,9 +62,8 @@ namespace CommandTaskRunner
                 return;
 
             string file = item.FileNames[1];
-            string ext = Path.GetExtension(file).ToLowerInvariant();
 
-            button.Enabled = button.Visible = _extensions.Contains(ext);
+            button.Enabled = button.Visible = CommandHelpers.IsFileSupported(file);
         }
 
         private void AddCommandToFile(object sender, EventArgs e)
@@ -79,13 +78,11 @@ namespace CommandTaskRunner
             bool isSolution;
             string configPath = GetConfigPath(item, out isSolution);
             bool configExist = File.Exists(configPath);
-            string document = configExist ? File.ReadAllText(configPath) : "{}";
 
-            JObject root = GetJsonObject(configPath, document);
-            AddCommandToRoot(file, configPath, root);
+            JObject json = CommandHelpers.GetJsonContent(configPath, file);
 
             ProjectHelpers.CheckFileOutOfSourceControl(configPath);
-            File.WriteAllText(configPath, root.ToString(), new UTF8Encoding(false));
+            File.WriteAllText(configPath, json.ToString(), new UTF8Encoding(false));
 
             if (!configExist)
             {
@@ -96,6 +93,7 @@ namespace CommandTaskRunner
             }
 
             OpenTaskRunnerExplorer();
+            VSPackage._dte.StatusBar.Text = $"File successfully added to {Constants.FILENAME}";
         }
 
         private static void AddFileToProject(ProjectItem item, bool isSolution, string configPath)
@@ -168,51 +166,6 @@ namespace CommandTaskRunner
             }
         }
 
-        private static void AddCommandToRoot(string file, string configPath, JObject root)
-        {
-            JObject command = (JObject)root["commands"];
-
-            var cmd = new
-            {
-                fileName = GetExecutableFileName(file),
-                workingDirectory= ".",
-                arguments = GetArguments(file, configPath),
-            };
-
-            string name = Path.GetFileNameWithoutExtension(file);
-
-            if (command[name] != null)
-                name += $" {DateTime.Now.GetHashCode()}";
-
-            string taskString = JsonConvert.SerializeObject(cmd, Formatting.Indented);
-
-            command.Add(name, JObject.Parse(taskString));
-        }
-
-        private static string GetArguments(string file, string configPath)
-        {
-            string relative = MakeRelative(configPath, file).Replace("/", "\\");
-
-            if (GetExecutableFileName(file) == "powershell.exe")
-                return $"-ExecutionPolicy Bypass -File {relative}";
-
-            return $"/c {relative}";
-        }
-
-        private static string GetExecutableFileName(string file)
-        {
-            string ext = Path.GetExtension(file).ToLowerInvariant();
-
-            switch (ext)
-            {
-                case ".ps1":
-                case ".psm1":
-                    return "powershell.exe";
-            }
-
-            return "cmd.exe";
-        }
-
         private void OpenTaskRunnerExplorer()
         {
             string vsCommandName = "View.TaskRunnerExplorer";
@@ -220,31 +173,6 @@ namespace CommandTaskRunner
 
             if (vsCommand != null && vsCommand.IsAvailable)
                 VSPackage._dte.ExecuteCommand(vsCommandName);
-        }
-
-        private static JObject GetJsonObject(string configPath, string document)
-        {
-            JObject root;
-
-            if (File.Exists(configPath))
-                root = JObject.Parse(document);
-            else
-                root = JObject.Parse("{ \"commands\": {}  }");
-
-            var commands = root["commands"];
-
-            if (commands == null)
-                root.Add("commands", JObject.Parse("{}"));
-
-            return root;
-        }
-
-        public static string MakeRelative(string baseFile, string file)
-        {
-            Uri baseUri = new Uri(baseFile, UriKind.RelativeOrAbsolute);
-            Uri fileUri = new Uri(file, UriKind.RelativeOrAbsolute);
-
-            return Uri.UnescapeDataString(baseUri.MakeRelativeUri(fileUri).ToString());
         }
     }
 }
