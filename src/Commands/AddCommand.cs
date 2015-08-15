@@ -12,7 +12,7 @@ namespace CommandTaskRunner
     internal sealed class AddCommand
     {
         private readonly Package package;
-        private static string[] _extensions = new[] { ".cmd", ".bat" };
+        private static string[] _extensions = new[] { ".cmd", ".bat", ".ps1", ".psm1" };
 
         private AddCommand(Package package)
         {
@@ -84,7 +84,7 @@ namespace CommandTaskRunner
 
             var cmd = new
             {
-                FileName = "cmd.exe",
+                FileName = GetExecutableFileName(file),
                 WorkingDirectory = ".",
                 Arguments = "/c " + MakeRelative(configPath, file).Replace("/", "\\"),
             };
@@ -102,6 +102,24 @@ namespace CommandTaskRunner
                 VSPackage._dte.ItemOperations.OpenFile(configPath);
 
             OpenTaskRunnerExplorer();
+        }
+
+        private static string GetExecutableFileName(string file)
+        {
+            string ext = Path.GetExtension(file).ToLowerInvariant();
+
+            switch (ext)
+            {
+                case ".cmd":
+                case ".bat":
+                    return "cmd.exe";
+
+                case ".ps1":
+                case ".psm1":
+                    return "powershell.exe";
+            }
+
+            return "cmd.exe";
         }
 
         private void OpenTaskRunnerExplorer()
