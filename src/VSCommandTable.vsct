@@ -1,0 +1,41 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<CommandTable xmlns="http://schemas.microsoft.com/VisualStudio/2005-10-18/CommandTable" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+    <Extern href="stdidcmd.h"/>
+    <Extern href="vsshlids.h"/>
+    <Include href="KnownImageIds.vsct"/>
+
+    <Commands package="guidAddCommandPackage">
+        <!--<Groups>
+            <Group guid="guidCommandCmdSet" id="MyMenuGroup" priority="0x0600">
+                <Parent guid="guidSHLMainMenu" id="IDG_VS_CTXT_ITEM_OPEN"/>
+            </Group>
+        </Groups>-->
+
+        <Buttons>
+            <Button guid="guidCommandCmdSet" id="AddCommandId" priority="0x0650" type="Button">
+                <Parent guid="guidSHLMainMenu" id="IDG_VS_CTXT_ITEM_OPEN"/>
+                <Icon guid="ImageCatalogGuid" id="WriteToConsole" />
+                <CommandFlag>IconIsMoniker</CommandFlag>
+                <CommandFlag>DefaultDisabled</CommandFlag>
+                <CommandFlag>DefaultInvisible</CommandFlag>
+                <CommandFlag>DynamicVisibility</CommandFlag>
+                <Strings>
+                    <ButtonText>Add to Task Runner</ButtonText>
+                </Strings>
+            </Button>
+        </Buttons>
+
+    </Commands>
+
+    <Symbols>
+        <!-- This is the package guid. -->
+        <GuidSymbol name="guidAddCommandPackage" value="{bc2a198c-4598-4e8f-97a6-249573ca88a9}" />
+
+        <!-- This is the guid used to group the menu commands together -->
+        <GuidSymbol name="guidCommandCmdSet" value="{1b181a1d-76a0-4629-8e2a-8c24d86c29bd}">
+            <!--<IDSymbol name="MyMenuGroup" value="1" />-->
+            <IDSymbol name="AddCommandId" value="100" />
+        </GuidSymbol>
+    </Symbols>
+</CommandTable>
