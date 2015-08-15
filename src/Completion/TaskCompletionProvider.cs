@@ -49,7 +49,7 @@ namespace CommandTaskRunner
             if (member == null || member.UnquotedNameText != Constants.ELEMENT_NAME)
                 yield break;
 
-            foreach (var task in GetTasks(context.ContextItem))
+            foreach (var task in GetTasks(context.ContextItem.JSONDocument))
             {
                 yield return new SimpleCompletionEntry(task.Item1, task.Item2, StandardGlyphGroup.GlyphGroupEvent, context.Session);
             }
@@ -60,7 +60,7 @@ namespace CommandTaskRunner
             var visitor = new JSONItemCollector<JSONMember>(true);
             item.JSONDocument.Accept(visitor);
 
-            var scripts = visitor.Items.FirstOrDefault(member => member.UnquotedNameText == "scripts");
+            var scripts = visitor.Items.FirstOrDefault(member => member.UnquotedNameText == "commands");
 
             if (scripts == null)
                 yield break;

@@ -1,0 +1,12 @@
+﻿{
+  "commands": {
+    "build": {
+      "FileName": "cmd.exe",
+      "WorkingDirectory": ".",
+      "Arguments": "/c echo foo"
+    }
+  },
+  "-vs-bindings": {
+
+  }
+}

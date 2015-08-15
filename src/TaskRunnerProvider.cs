@@ -56,7 +56,7 @@ namespace CommandTaskRunner
             {
                 string cwd = command.WorkingDirectory ?? rootDir;
 
-                // Hack to reload command filename and arguments
+                // HACK: Needed to reload command filename and arguments
                 _cache[command.Name] = _cache.ContainsKey(command.Name) ? _cache[command.Name] + 1 : 0;
                 int count = _cache[command.Name];
                 string commandName = command.Name + (count == 0 ? "" : $" ({count})");
