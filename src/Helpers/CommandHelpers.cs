@@ -71,6 +71,9 @@ namespace CommandTaskRunner
         {
             string relative = MakeRelative(configPath, file).Replace("/", "\\");
 
+            if (relative.Contains(' '))
+                relative = $"\"{relative}\"";
+
             if (GetExecutableFileName(file) == "powershell.exe")
                 return $"-ExecutionPolicy Bypass -File {relative}";
 
