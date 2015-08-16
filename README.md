@@ -74,3 +74,10 @@ Script bindings make it possible to associate individual scripts
 with Visual Studio events such as "After build" etc.
 
 ![Visual Studio bindings](art/bindings.png)
+
+### Intellisense
+
+If you manually edit bindings in `command.json``,
+then full Intellisense is provided.
+
+![Bindings Intellisense](art/intellisense.png)
