@@ -77,9 +77,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Completion\TaskCompletionProvider.cs" />
     <Compile Include="Completion\SimpleCompletionEntry.cs" />
-    <Compile Include="CommandTask.cs" />
-    <Compile Include="TaskParser.cs" />
-    <Compile Include="TaskRunnerProvider.cs" />
+    <Compile Include="TaskRunner\CommandTask.cs" />
+    <Compile Include="TaskRunner\TaskParser.cs" />
+    <Compile Include="TaskRunner\TaskRunnerProvider.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="..\LICENSE">
@@ -98,7 +98,6 @@
     <Content Include="Resources\preview.png">
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <None Include="app.config" />
     <Content Include="Schema\commands-schema.json">
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
@@ -258,6 +257,7 @@
       <MergeWithCTO>true</MergeWithCTO>
       <ManifestResourceName>VSPackage</ManifestResourceName>
       <SubType>Designer</SubType>
+      <DependentUpon>VSPackage.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
@@ -272,7 +272,7 @@
   <Import Project="..\packages\Microsoft.VSSDK.BuildTools.14.0.23107\build\Microsoft.VSSDK.BuildTools.targets" Condition="Exists('..\packages\Microsoft.VSSDK.BuildTools.14.0.23107\build\Microsoft.VSSDK.BuildTools.targets')" />
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties JSON_4commands_1json__JSONSchema="commands-schema.json" Schema_4commands_1json__JSONSchema="commands-schema.json" />
+      <UserProperties Schema_4commands_1json__JSONSchema="commands-schema.json" JSON_4commands_1json__JSONSchema="commands-schema.json" />
     </VisualStudio>
   </ProjectExtensions>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
