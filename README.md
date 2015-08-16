@@ -30,6 +30,17 @@ put it in the project or solution folder.
 If a `commands.json` file already exist, the new batch
 file will be added.
 
+### commands.json locations
+
+The Task Runner Explorer supports multiple task runners in the
+same solution. For instance, you can have commands specified
+for the solution and additional ones for each project in that
+solution.
+
+Task Runner Explorer will try to find a `commands.json` file
+in any parent folder to either the individual projects or
+the solution until it hits the root of the drive.
+
 ### Commands
 
 Inside commands.json it is possible to add custom scripts inside
