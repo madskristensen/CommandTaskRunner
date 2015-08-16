@@ -30,6 +30,15 @@ put it in the project or solution folder.
 If a `commands.json` file already exist, the new batch
 file will be added.
 
+### Execute scripts
+
+When scripts are specified, the Task Runner Explorer
+will show those scripts.
+
+![Task list](art/task-list.png)
+
+Each script can be executed by double-clicking the task.
+
 ### commands.json locations
 
 The Task Runner Explorer supports multiple task runners in the
@@ -64,15 +73,6 @@ You can execute any command inside `commands.json` by manually
 editing it. A batch file is not needed if you just need to
 execute simple commands.
 
-### Execute scripts
-
-When scripts are specified, the Task Runner Explorer
-will show those scripts.
-
-![Task list](art/task-list.png)
-
-Each script can be executed by double-clicking the task.
-
 ### Drag and drop
 
 You can drag any supported batch file onto `commands.json`
@@ -92,3 +92,10 @@ If you manually edit bindings in `command.json``,
 then full Intellisense is provided.
 
 ![Bindings Intellisense](art/intellisense.png)
+
+### Open Command Line
+
+For the optimal experience with batch file and Visual Studio, try
+the free
+[Open Command Line](https://visualstudiogallery.msdn.microsoft.com/4e84e2cf-2d6b-472a-b1e2-b84932511379)
+extension for even more features.
