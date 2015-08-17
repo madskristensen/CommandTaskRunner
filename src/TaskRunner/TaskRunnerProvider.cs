@@ -10,11 +10,53 @@ using ProjectTaskRunner.Helpers;
 
 namespace CommandTaskRunner
 {
+    internal class TrimmingStringComparer : IEqualityComparer<string>
+    {
+        private char _toTrim;
+        private IEqualityComparer<string> _basisComparison;
+
+        public TrimmingStringComparer(char toTrim)
+            : this(toTrim, StringComparer.Ordinal)
+        {
+        }
+
+        public TrimmingStringComparer(char toTrim, IEqualityComparer<string> basisComparer)
+        {
+            _toTrim = toTrim;
+            _basisComparison = basisComparer;
+        }
+
+        public bool Equals(string x, string y)
+        {
+            string realX = x?.TrimEnd(_toTrim);
+            string realY = y?.TrimEnd(_toTrim);
+            return _basisComparison.Equals(realX, realY);
+        }
+
+        public int GetHashCode(string obj)
+        {
+            string realObj = obj?.TrimEnd(_toTrim);
+            return realObj != null ? _basisComparison.GetHashCode(realObj) : 0;
+        }
+    }
+
     [TaskRunnerExport(Constants.FILENAME)]
     class TaskRunnerProvider : ITaskRunner
     {
         private ImageSource _icon;
-        private static Dictionary<string, int> _cache = new Dictionary<string, int>();
+        private HashSet<string> _dynamicNames = new HashSet<string>(new TrimmingStringComparer('\u200B'));
+
+        public void SetDynamicTaskName(string dynamicName)
+        {
+            _dynamicNames.Remove(dynamicName);
+            _dynamicNames.Add(dynamicName);
+        }
+
+        public string GetDynamicName(string name)
+        {
+            IEqualityComparer<string> comparer = new TrimmingStringComparer('\u200B');
+            return _dynamicNames.FirstOrDefault(x => comparer.Equals(name, x));
+        }
 
         public TaskRunnerProvider()
         {
@@ -35,7 +77,7 @@ namespace CommandTaskRunner
                 if (!hierarchy.Children.Any() && !hierarchy.Children.First().Children.Any())
                     return null;
 
-                return new TaskRunnerConfig(context, hierarchy, _icon);
+                return new TaskRunnerConfig(this, context, hierarchy, _icon);
             });
         }
 
@@ -56,10 +98,9 @@ namespace CommandTaskRunner
             {
                 string cwd = command.WorkingDirectory ?? rootDir;
 
-                // HACK: Needed to reload command filename and arguments
-                _cache[command.Name] = _cache.ContainsKey(command.Name) ? _cache[command.Name] + 1 : 0;
-                int count = _cache[command.Name];
-                string commandName = command.Name + (count == 0 ? "" : $" ({count})");
+                // Add zero width space
+                string commandName = command.Name += "\u200B";
+                SetDynamicTaskName(commandName);
 
                 TaskRunnerNode task = new TaskRunnerNode(commandName, true)
                 {

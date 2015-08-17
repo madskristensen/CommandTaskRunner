@@ -1,23 +1,25 @@
 ﻿using System;
 using System.Windows.Media;
+using CommandTaskRunner;
 using Microsoft.VisualStudio.TaskRunnerExplorer;
 
 namespace ProjectTaskRunner.Helpers
 {
-    public abstract class TaskRunnerConfigBase : ITaskRunnerConfig
+    internal abstract class TaskRunnerConfigBase : ITaskRunnerConfig
     {
         private static ImageSource SharedIcon;
-
+        private BindingsPersister _bindingsPersister;
         private ITaskRunnerCommandContext _context;
 
-        protected TaskRunnerConfigBase(ITaskRunnerCommandContext context, ITaskRunnerNode hierarchy)
+        protected TaskRunnerConfigBase(TaskRunnerProvider provider, ITaskRunnerCommandContext context, ITaskRunnerNode hierarchy)
         {
+            _bindingsPersister = new BindingsPersister(provider);
             TaskHierarchy = hierarchy;
             _context = context;
         }
 
         /// <summary>
-        /// TaskRunner icon 
+        /// TaskRunner icon
         /// </summary>
         public virtual ImageSource Icon => SharedIcon ?? (SharedIcon = LoadRootNodeIcon());
 
@@ -33,7 +35,7 @@ namespace ProjectTaskRunner.Helpers
         {
             try
             {
-                return BindingsPersister.Load(configPath);
+                return _bindingsPersister.Load(configPath);
             }
             catch
             {
@@ -45,7 +47,7 @@ namespace ProjectTaskRunner.Helpers
         {
             try
             {
-                return BindingsPersister.Save(configPath, bindingsXml);
+                return _bindingsPersister.Save(configPath, bindingsXml);
             }
             catch
             {

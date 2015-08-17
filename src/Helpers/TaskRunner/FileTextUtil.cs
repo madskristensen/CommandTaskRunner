@@ -28,10 +28,18 @@ namespace ProjectTaskRunner.Helpers
             using (StringReader reader = new StringReader(fileContents))
             using (TextWriter writer = new StreamWriter(File.Open(_filename, FileMode.Create)))
             {
+                int remainingCharacters = range.LineRange.Length;
+                int currentStart = range.LineRange.Start;
                 string lineText;
-                if (SeekTo(reader, writer, range, out lineText))
+                while (remainingCharacters > 0 && SeekTo(reader, writer, range, out lineText))
                 {
-                    writer.WriteLine(lineText.Substring(0, range.LineRange.Start) + lineText.Substring(range.LineRange.Start + range.LineRange.Length));
+                    int trimFromLine = Math.Min(lineText.Length - currentStart, remainingCharacters);
+                    writer.WriteLine(lineText.Substring(0, currentStart) + lineText.Substring(currentStart + trimFromLine));
+                    remainingCharacters -= trimFromLine;
+                    range.LineNumber = 0;
+                    range.LineRange.Start = 0;
+                    range.LineRange.Length = remainingCharacters;
+                    currentStart = 0;
                 }
 
                 lineText = reader.ReadLine();
@@ -102,7 +110,7 @@ namespace ProjectTaskRunner.Helpers
 
         public string ReadAllText()
         {
-            return File.ReadAllText(_filename);
+            return File.ReadAllText(_filename).Replace("\r", "").Replace("\n", "");
         }
 
         public void Reset()
