@@ -58,10 +58,10 @@ namespace CommandTaskRunner
 
             var item = ProjectHelpers.GetSelectedItems().FirstOrDefault();
 
-            if (item == null || item.FileCount == 0)
+            if (item == null || item.Properties == null)
                 return;
 
-            string file = item.FileNames[1];
+            string file = item.Properties.Item("FullPath")?.Value?.ToString();
 
             button.Enabled = button.Visible = CommandHelpers.IsFileSupported(file);
         }
