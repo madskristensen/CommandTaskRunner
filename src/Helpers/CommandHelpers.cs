@@ -12,7 +12,7 @@ namespace CommandTaskRunner
 
         public static bool IsFileSupported(string file)
         {
-            if (string.IsNullOrEmpty(file))
+            if (string.IsNullOrEmpty(file) || !file.Contains(":\\"))
                 return false;
 
             string ext = Path.GetExtension(file).ToLowerInvariant();
