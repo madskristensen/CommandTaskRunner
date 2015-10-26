@@ -17,7 +17,7 @@ after_test:
   - ps: Vsix-PushArtifacts | Vsix-PublishToGallery
 
 before_deploy:
-  - ps: Vsix-CreateChocolatyPackage
+  - ps: Vsix-CreateChocolatyPackage -packageId commandtaskrunner
 
 deploy:
   - provider: Environment
