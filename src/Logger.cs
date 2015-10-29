@@ -39,6 +39,7 @@ public static class Logger
         if (ex != null)
         {
             Log(ex.ToString());
+            Telemetry.TrackException(ex);
         }
     }
 

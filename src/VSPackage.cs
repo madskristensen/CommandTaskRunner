@@ -22,6 +22,7 @@ namespace CommandTaskRunner
             _dte = GetService(typeof(DTE)) as DTE2;
 
             Logger.Initialize(this, Constants.VSIX_NAME);
+            Telemetry.Initialize(_dte, Version, "0894118c-3b80-4aa8-a6b9-fb6b110d0c7e");
             AddCommand.Initialize(this);
 
             base.Initialize();
