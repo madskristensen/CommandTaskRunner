@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
     <Metadata>
-        <Identity Id="fc1aafb2-321e-41bd-ac37-03b09ea8ef31" Version="1.0" Language="en-US" Publisher="Mads Kristensen" />
+        <Identity Id="fc1aafb2-321e-41bd-ac37-03b09ea8ef31" Version="1.1" Language="en-US" Publisher="Mads Kristensen" />
         <DisplayName>Command Task Runner</DisplayName>
         <Description xml:space="preserve">Adds support for command line batch files in Visual Studio 2015's Task Runner Explorer. Supports .cmd, .bat, .ps1 and .psm1 files.</Description>
         <License>Resources\LICENSE</License>
