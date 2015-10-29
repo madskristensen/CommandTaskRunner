@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Security.Cryptography;
+using System.Text;
 using EnvDTE;
 using EnvDTE80;
 using Microsoft.ApplicationInsights;
@@ -21,10 +23,16 @@ public static class Telemetry
 
         _telemetry = new TelemetryClient();
         _telemetry.Context.Session.Id = Guid.NewGuid().ToString();
-        _telemetry.Context.User.Id = (Environment.UserName + Environment.MachineName).GetHashCode().ToString();
         _telemetry.Context.Device.Model = dte.Edition;
         _telemetry.InstrumentationKey = telemetryKey;
         _telemetry.Context.Component.Version = version;
+
+        byte[] enc = Encoding.UTF8.GetBytes(Environment.UserName + Environment.MachineName);
+        using (var crypto = new MD5CryptoServiceProvider())
+        {
+            byte[] hash = crypto.ComputeHash(enc);
+            _telemetry.Context.User.Id = Convert.ToBase64String(hash);
+        }
 
         _events = dte.Events.DTEEvents;
         _events.OnBeginShutdown += delegate { _telemetry.Flush(); };
