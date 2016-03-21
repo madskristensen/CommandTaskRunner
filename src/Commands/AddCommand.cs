@@ -151,7 +151,7 @@ namespace CommandTaskRunner
                 return configPath;
 
             string message = "Do you want to configure the task runner on the solution level?\r\rIf not, it will be configured on the project";
-            var result = MessageBox.Show(message, Constants.VSIX_NAME, MessageBoxButton.YesNo, MessageBoxImage.Question);
+            var result = MessageBox.Show(message, Vsix.Name, MessageBoxButton.YesNo, MessageBoxImage.Question);
 
             if (result == MessageBoxResult.Yes)
             {

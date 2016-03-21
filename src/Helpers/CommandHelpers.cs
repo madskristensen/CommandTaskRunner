@@ -75,7 +75,7 @@ namespace CommandTaskRunner
                 relative = $"\"{relative}\"";
 
             if (GetExecutableFileName(file) == "powershell.exe")
-                return $"-ExecutionPolicy Bypass -File {relative}";
+                return $"-ExecutionPolicy Bypass -NonInteractive -File {relative}";
 
             return $"/c {relative}";
         }
