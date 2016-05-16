@@ -7,29 +7,23 @@ using System.Windows;
 using EnvDTE;
 using EnvDTE80;
 using Microsoft.VisualStudio.Shell;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace CommandTaskRunner
 {
     internal sealed class AddCommand
     {
-        private readonly Package package;
+        private readonly Package _package;
 
 
         private AddCommand(Package package)
         {
-            if (package == null)
-            {
-                throw new ArgumentNullException(nameof(package));
-            }
-
-            this.package = package;
+            _package = package;
 
             OleMenuCommandService commandService = ServiceProvider.GetService(typeof(IMenuCommandService)) as OleMenuCommandService;
             if (commandService != null)
             {
-                var cmdAddCommand = new CommandID(GuidList.guidCommandCmdSet, PackageCommands.AddCommandId);
+                var cmdAddCommand = new CommandID(PackageGuids.guidCommandCmdSet, PackageIds.AddCommandId);
                 var addCommandItem = new OleMenuCommand(AddCommandToFile, cmdAddCommand);
                 addCommandItem.BeforeQueryStatus += BeforeQueryStatus;
                 commandService.AddCommand(addCommandItem);
@@ -43,7 +37,7 @@ namespace CommandTaskRunner
 
         private IServiceProvider ServiceProvider
         {
-            get { return this.package; }
+            get { return _package; }
         }
 
         public static void Initialize(Package package)

@@ -11,7 +11,7 @@ namespace CommandTaskRunner
     [InstalledProductRegistration("#110", "#112", Vsix.Version, IconResourceID = 400)]
     [ProvideMenuResource("Menus.ctmenu", 1)]
     [ProvideAutoLoad(UIContextGuids80.SolutionExists)]
-    [Guid(GuidList.guidAddCommandPackageString)]
+    [Guid(PackageGuids.guidAddCommandPackageString)]
     public sealed class VSPackage : Package
     {
         public static DTE2 _dte;
