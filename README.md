@@ -1,7 +1,7 @@
 # Command Task Runner extension
 
 Adds support for command line batch files in Visual Studio 2015's
-Task Runner Explorer. Supports `.cmd`, `.bat`, `.ps1` and `.psm1` files.
+Task Runner Explorer. Supports `.exe`, `.cmd`, `.bat`, `.ps1` and `.psm1` files.
 
 [![Build status](https://ci.appveyor.com/api/projects/status/grreswaawyla0j6c?svg=true)](https://ci.appveyor.com/project/madskristensen/commandtaskrunner)
 
