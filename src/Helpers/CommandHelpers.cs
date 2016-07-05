@@ -8,7 +8,7 @@ namespace CommandTaskRunner
 {
     class CommandHelpers
     {
-        private static string[] _extensions = new[] { ".cmd", ".bat", ".ps1", ".psm1" };
+        private static string[] _extensions = new[] { ".exe", ".cmd", ".bat", ".ps1", ".psm1" };
 
         public static bool IsFileSupported(string file)
         {
