@@ -13,21 +13,18 @@ namespace CommandTaskRunner
 {
     internal sealed class AddCommand
     {
-        private readonly Package _package;
+        private readonly IServiceProvider _package;
+        private DTE2 _dte;
 
-
-        private AddCommand(Package package)
+        private AddCommand(IServiceProvider package, DTE2 dte, OleMenuCommandService commandService)
         {
             _package = package;
+            _dte = dte;
 
-            OleMenuCommandService commandService = ServiceProvider.GetService(typeof(IMenuCommandService)) as OleMenuCommandService;
-            if (commandService != null)
-            {
-                var cmdAddCommand = new CommandID(PackageGuids.guidCommandCmdSet, PackageIds.AddCommandId);
-                var addCommandItem = new OleMenuCommand(AddCommandToFile, cmdAddCommand);
-                addCommandItem.BeforeQueryStatus += BeforeQueryStatus;
-                commandService.AddCommand(addCommandItem);
-            }
+            var cmdAddCommand = new CommandID(PackageGuids.guidCommandCmdSet, PackageIds.AddCommandId);
+            var addCommandItem = new OleMenuCommand(AddCommandToFile, cmdAddCommand);
+            addCommandItem.BeforeQueryStatus += BeforeQueryStatus;
+            commandService.AddCommand(addCommandItem);
         }
 
         public static AddCommand Instance
@@ -35,14 +32,12 @@ namespace CommandTaskRunner
             get; private set;
         }
 
-        private IServiceProvider ServiceProvider
+        public static void Initialize(IServiceProvider serviceProvider)
         {
-            get { return _package; }
-        }
+            var commandService = serviceProvider.GetService(typeof(IMenuCommandService)) as OleMenuCommandService;
+            var dte = serviceProvider.GetService(typeof(DTE)) as DTE2;
 
-        public static void Initialize(Package package)
-        {
-            Instance = new AddCommand(package);
+            Instance = new AddCommand(serviceProvider, dte, commandService);
         }
 
         private void BeforeQueryStatus(object sender, EventArgs e)
@@ -81,25 +76,25 @@ namespace CommandTaskRunner
             if (!configExist)
             {
                 AddFileToProject(item, isSolution, configPath);
-                VSPackage._dte.ItemOperations.OpenFile(configPath);
-                VSPackage._dte.ExecuteCommand("SolutionExplorer.SyncWithActiveDocument");
-                VSPackage._dte.ExecuteCommand("SolutionExplorer.SyncWithActiveDocument");
+                _dte.ItemOperations.OpenFile(configPath);
+                _dte.ExecuteCommand("SolutionExplorer.SyncWithActiveDocument");
+                _dte.ExecuteCommand("SolutionExplorer.SyncWithActiveDocument");
             }
 
             OpenTaskRunnerExplorer();
-            VSPackage._dte.StatusBar.Text = $"File successfully added to {Constants.FILENAME}";
+            _dte.StatusBar.Text = $"File successfully added to {Constants.FILENAME}";
         }
 
-        private static void AddFileToProject(ProjectItem item, bool isSolution, string configPath)
+        private void AddFileToProject(ProjectItem item, bool isSolution, string configPath)
         {
-            if (VSPackage._dte.Solution.FindProjectItem(configPath) != null)
+            if (_dte.Solution.FindProjectItem(configPath) != null)
                 return;
 
             Project currentProject = null;
 
             if (isSolution && item.Kind != EnvDTE.Constants.vsProjectItemKindSolutionItems)
             {
-                Solution2 solution = (Solution2)VSPackage._dte.Solution;
+                Solution2 solution = (Solution2)_dte.Solution;
 
                 foreach (Project project in solution.Projects)
                 {
@@ -119,7 +114,7 @@ namespace CommandTaskRunner
             ProjectHelpers.AddFileToProject(currentProject, configPath, "None");
         }
 
-        private static string GetConfigPath(ProjectItem item, out bool isSolution)
+        private string GetConfigPath(ProjectItem item, out bool isSolution)
         {
             isSolution = false;
 
@@ -127,7 +122,7 @@ namespace CommandTaskRunner
             if (item.Kind == EnvDTE.Constants.vsProjectItemKindSolutionItems)
             {
                 isSolution = true;
-                string solutionRoot = Path.GetDirectoryName(VSPackage._dte.Solution.FullName);
+                string solutionRoot = Path.GetDirectoryName(_dte.Solution.FullName);
                 return Path.Combine(solutionRoot, Constants.FILENAME);
             }
 
@@ -150,7 +145,7 @@ namespace CommandTaskRunner
             if (result == MessageBoxResult.Yes)
             {
                 isSolution = true;
-                string solutionRoot = Path.GetDirectoryName(VSPackage._dte.Solution.FullName);
+                string solutionRoot = Path.GetDirectoryName(_dte.Solution.FullName);
                 return Path.Combine(solutionRoot, Constants.FILENAME);
             }
             else
@@ -163,10 +158,10 @@ namespace CommandTaskRunner
         private void OpenTaskRunnerExplorer()
         {
             string vsCommandName = "View.TaskRunnerExplorer";
-            var vsCommand = VSPackage._dte.Commands.Item(vsCommandName);
+            var vsCommand = _dte.Commands.Item(vsCommandName);
 
             if (vsCommand != null && vsCommand.IsAvailable)
-                VSPackage._dte.ExecuteCommand(vsCommandName);
+                _dte.ExecuteCommand(vsCommandName);
         }
     }
 }

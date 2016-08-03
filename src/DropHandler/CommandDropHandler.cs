@@ -2,6 +2,9 @@
 using System.Collections.Specialized;
 using System.IO;
 using System.Windows;
+using EnvDTE;
+using EnvDTE80;
+using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Editor.DragDrop;
@@ -13,11 +16,13 @@ namespace CommandTaskRunner
         private readonly ITextDocumentFactoryService _documentFactory;
         private readonly IWpfTextView _view;
         private string _fileName;
+        private DTE2 _dte;
 
         public CommandDropHandler(ITextDocumentFactoryService documentFactory, IWpfTextView view)
         {
             _documentFactory = documentFactory;
             _view = view;
+            _dte = (DTE2)Package.GetGlobalService(typeof(DTE));
         }
 
         public DragDropPointerEffects HandleDataDropped(DragDropInfo dragDropInfo)
@@ -48,10 +53,10 @@ namespace CommandTaskRunner
         {
             _fileName = GetImageFilename(dragDropInfo);
 
-            if (string.IsNullOrEmpty(_fileName) || !CommandHelpers.IsFileSupported(_fileName) || VSPackage._dte.ActiveDocument == null)
+            if (string.IsNullOrEmpty(_fileName) || !CommandHelpers.IsFileSupported(_fileName) || _dte.ActiveDocument == null)
                 return false;
 
-            string activeFile = Path.GetFileName(VSPackage._dte.ActiveDocument.FullName);
+            string activeFile = Path.GetFileName(_dte.ActiveDocument.FullName);
 
             if (Constants.FILENAME.Equals(activeFile, StringComparison.OrdinalIgnoreCase))
                 return true;

@@ -1,26 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices;
 using EnvDTE;
 using EnvDTE80;
+using Microsoft.VisualStudio.Shell;
 
 namespace CommandTaskRunner
 {
     public static class ProjectHelpers
     {
-        private static DTE2 _dte = VSPackage._dte;
-
-        public static string GetConfigFile(this Project project)
-        {
-            string folder = project.GetRootFolder();
-
-            if (string.IsNullOrEmpty(folder))
-                return null;
-
-            return Path.Combine(folder, Constants.FILENAME);
-        }
+        private static DTE2 _dte = (DTE2)Package.GetGlobalService(typeof(DTE));
 
         public static void CheckFileOutOfSourceControl(string file)
         {
@@ -44,15 +33,6 @@ namespace CommandTaskRunner
 
                 if (item != null)
                     yield return item;
-            }
-        }
-
-        public static IEnumerable<string> GetSelectedItemPaths()
-        {
-            foreach (ProjectItem item in GetSelectedItems())
-            {
-                if (item != null && item.Properties != null)
-                    yield return item.Properties.Item("FullPath").Value.ToString();
             }
         }
 
@@ -111,60 +91,6 @@ namespace CommandTaskRunner
             {
                 Logger.Log(ex);
             }
-        }
-
-        public static void DeleteFileFromProject(string file)
-        {
-            ProjectItem item = _dte.Solution.FindProjectItem(file);
-
-            if (item == null)
-                return;
-            try
-            {
-                item.Delete();
-            }
-            catch (Exception ex)
-            {
-                Logger.Log(ex);
-            }
-
-        }
-
-        public static void AddNestedFile(string parentFile, string newFile)
-        {
-            ProjectItem item = _dte.Solution.FindProjectItem(parentFile);
-
-            try
-            {
-                if (item == null || item.ContainingProject == null || item.ContainingProject.Kind.Equals("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}", StringComparison.OrdinalIgnoreCase))
-                    return;
-
-                if (item.ProjectItems == null) // Website project
-                    item.ContainingProject.ProjectItems.AddFromFile(newFile);
-                else
-                    item.ProjectItems.AddFromFile(newFile);
-            }
-            catch (Exception ex)
-            {
-                Logger.Log(ex);
-            }
-        }
-
-        public static Project GetActiveProject()
-        {
-            try
-            {
-                Array activeSolutionProjects = _dte.ActiveSolutionProjects as Array;
-
-                if (activeSolutionProjects != null && activeSolutionProjects.Length > 0)
-                    return activeSolutionProjects.GetValue(0) as Project;
-            }
-            catch (Exception ex)
-            {
-                Logger.Log("Error getting the active project" + ex);
-            }
-
-            return null;
         }
     }
 }

@@ -13,6 +13,6 @@ namespace CommandTaskRunner
         public const string Language = "en-US";
         public const string Version = "1.2";
         public const string Author = "Mads Kristensen";
-        public const string Tags = "command-line, PowerShell, cmd, batch, bat, exes";
+        public const string Tags = "command-line, PowerShell, cmd, batch, bat, exe";
     }
 }
