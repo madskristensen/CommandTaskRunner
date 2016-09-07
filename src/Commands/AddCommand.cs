@@ -8,17 +8,16 @@ using EnvDTE;
 using EnvDTE80;
 using Microsoft.VisualStudio.Shell;
 using Newtonsoft.Json.Linq;
+using task = System.Threading.Tasks.Task;
 
 namespace CommandTaskRunner
 {
     internal sealed class AddCommand
     {
-        private readonly IServiceProvider _package;
         private DTE2 _dte;
 
-        private AddCommand(IServiceProvider package, DTE2 dte, OleMenuCommandService commandService)
+        private AddCommand(OleMenuCommandService commandService, DTE2 dte)
         {
-            _package = package;
             _dte = dte;
 
             var cmdAddCommand = new CommandID(PackageGuids.guidCommandCmdSet, PackageIds.AddCommandId);
@@ -32,12 +31,12 @@ namespace CommandTaskRunner
             get; private set;
         }
 
-        public static void Initialize(IServiceProvider serviceProvider)
+        public static async task Initialize(AsyncPackage package)
         {
-            var commandService = serviceProvider.GetService(typeof(IMenuCommandService)) as OleMenuCommandService;
-            var dte = serviceProvider.GetService(typeof(DTE)) as DTE2;
+            var commandService = await package.GetServiceAsync(typeof(IMenuCommandService)) as OleMenuCommandService;
+            var dte = await package.GetServiceAsync(typeof(DTE)) as DTE2;
 
-            Instance = new AddCommand(serviceProvider, dte, commandService);
+            Instance = new AddCommand(commandService, dte);
         }
 
         private void BeforeQueryStatus(object sender, EventArgs e)
