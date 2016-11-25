@@ -53,7 +53,6 @@
     <Compile Include="DropHandler\CommandDropHandler.cs" />
     <Compile Include="Helpers\CommandHelpers.cs" />
     <Compile Include="Helpers\ProjectHelpers.cs" />
-    <Compile Include="Schema\CommandsSchemaSelector.cs" />
     <Compile Include="Helpers\Logger.cs" />
     <Compile Include="source.extension.cs">
       <DependentUpon>source.extension.vsixmanifest</DependentUpon>
@@ -100,11 +99,7 @@
     <Content Include="Resources\preview.png">
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="Schema\commands-schema.json">
-      <IncludeInVSIX>true</IncludeInVSIX>
-    </Content>
     <None Include="app.config" />
-    <None Include="Schema\commands.json" />
     <None Include="packages.config" />
     <None Include="source.extension.vsixmanifest">
       <SubType>Designer</SubType>
@@ -248,7 +243,7 @@
   <Import Project="$(VSToolsPath)\VSSDK\Microsoft.VsSDK.targets" Condition="'$(VSToolsPath)' != ''" />
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties Schema_4commands_1json__JSONSchema="commands-schema.json" JSON_4commands_1json__JSONSchema="commands-schema.json" />
+      <UserProperties Schema_4commands_1json__JSONSchema="commands-schema.json" />
     </VisualStudio>
   </ProjectExtensions>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
