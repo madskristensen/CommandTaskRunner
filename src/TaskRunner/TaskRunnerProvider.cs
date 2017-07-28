@@ -102,7 +102,7 @@ namespace CommandTaskRunner
             var dte = (DTE)_serviceProvider.GetService(typeof(DTE));
 
             var sln = dte.Solution;
-            var projs = sln.Projects;
+            var projs = GetProjects(dte);
             var build = sln.SolutionBuild;
             var slnCfg = (SolutionConfiguration2)build.ActiveConfiguration;
 
@@ -183,6 +183,55 @@ namespace CommandTaskRunner
             }
 
             return root;
+        }
+
+        private IList<Project> GetProjects(DTE dte)
+        {
+            Projects projects = dte.Solution.Projects;
+            List<Project> list = new List<Project>();
+            var item = projects.GetEnumerator();
+            while (item.MoveNext())
+            {
+                var project = item.Current as Project;
+                if (project == null)
+                {
+                    continue;
+                }
+
+                if (project.Kind == EnvDTE.Constants.vsProjectKindSolutionItems)
+                {
+                    list.AddRange(GetSolutionFolderProjects(project));
+                }
+                else
+                {
+                    list.Add(project);
+                }
+            }
+
+            return list;
+        }
+
+        private IEnumerable<Project> GetSolutionFolderProjects(Project solutionFolder)
+        {
+            List<Project> list = new List<Project>();
+            for (var i = 1; i <= solutionFolder.ProjectItems.Count; i++)
+            {
+                var subProject = solutionFolder.ProjectItems.Item(i).SubProject;
+                if (subProject == null)
+                {
+                    continue;
+                }
+
+                if (subProject.Kind == EnvDTE.Constants.vsProjectKindSolutionItems)
+                {
+                    list.AddRange(GetSolutionFolderProjects(subProject));
+                }
+                else
+                {
+                    list.Add(subProject);
+                }
+            }
+            return list;
         }
     }
 }
