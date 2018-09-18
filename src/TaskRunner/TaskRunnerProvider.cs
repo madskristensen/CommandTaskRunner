@@ -1,12 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.Composition;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using EnvDTE;
+using EnvDTE80;
+using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.TaskRunnerExplorer;
 using ProjectTaskRunner.Helpers;
+using Task = System.Threading.Tasks.Task;
 
 namespace CommandTaskRunner
 {
@@ -46,6 +51,9 @@ namespace CommandTaskRunner
         private ImageSource _icon;
         private HashSet<string> _dynamicNames = new HashSet<string>(new TrimmingStringComparer('\u200B'));
 
+        [Import]
+        internal SVsServiceProvider _serviceProvider = null;
+
         public void SetDynamicTaskName(string dynamicName)
         {
             _dynamicNames.Remove(dynamicName);
@@ -80,6 +88,64 @@ namespace CommandTaskRunner
                 return new TaskRunnerConfig(this, context, hierarchy, _icon);
             });
         }
+        
+        private void ApplyVariable(string key, string value, ref string str)
+        {
+            str = str.Replace(key, value);
+        }
+
+        private string SetVariables(string str, string cmdsDir)
+        {
+            if (str == null)
+                return str;
+
+            var dte = (DTE)_serviceProvider.GetService(typeof(DTE));
+
+            var sln = dte.Solution;
+            var projs = sln.Projects;
+            var build = sln.SolutionBuild;
+            var slnCfg = (SolutionConfiguration2)build.ActiveConfiguration;
+
+            var proj = projs.Cast<Project>().FirstOrDefault(x => x.FileName.Contains(cmdsDir));
+
+            ApplyVariable("$(ConfigurationName)", slnCfg.Name, ref str);
+            ApplyVariable("$(DevEnvDir)", Path.GetDirectoryName(dte.FileName), ref str);
+            ApplyVariable("$(PlatformName)", slnCfg.PlatformName, ref str);
+
+            ApplyVariable("$(SolutionDir)", Path.GetDirectoryName(sln.FileName), ref str);
+            ApplyVariable("$(SolutionExt)", Path.GetExtension(sln.FileName), ref str);
+            ApplyVariable("$(SolutionFileName)", Path.GetFileName(sln.FileName), ref str);
+            ApplyVariable("$(SolutionName)", Path.GetFileNameWithoutExtension(sln.FileName), ref str);
+            ApplyVariable("$(SolutionPath)", sln.FileName, ref str);
+
+            if (proj != null)
+            {
+                var projCfg = proj.ConfigurationManager.ActiveConfiguration;
+
+                var outDir = (string)projCfg.Properties.Item("OutputPath").Value;
+
+                var projectDir = Path.GetDirectoryName(proj.FileName);
+                var targetFilename = (string)proj.Properties.Item("OutputFileName").Value;
+                var targetPath = Path.Combine(projectDir, outDir, targetFilename);
+                var targetDir = Path.Combine(projectDir, outDir);
+
+                ApplyVariable("$(OutDir)", outDir, ref str);
+
+                ApplyVariable("$(ProjectDir)", projectDir, ref str);
+                ApplyVariable("$(ProjectExt)", Path.GetExtension(proj.FileName), ref str);
+                ApplyVariable("$(ProjectFileName)", Path.GetFileName(proj.FileName), ref str);
+                ApplyVariable("$(ProjectName)", proj.Name, ref str);
+                ApplyVariable("$(ProjectPath)", proj.FileName, ref str);
+
+                ApplyVariable("$(TargetDir)", targetDir, ref str);
+                ApplyVariable("$(TargetExt)", Path.GetExtension(targetFilename), ref str);
+                ApplyVariable("$(TargetFileName)", targetFilename, ref str);
+                ApplyVariable("$(TargetName)", proj.Name, ref str);
+                ApplyVariable("$(TargetPath)", targetPath, ref str);
+            }
+
+            return str;
+        }
 
         private ITaskRunnerNode LoadHierarchy(string configPath)
         {
@@ -96,6 +162,11 @@ namespace CommandTaskRunner
 
             foreach (CommandTask command in commands.OrderBy(k => k.Name))
             {
+                command.Arguments = SetVariables(command.Arguments, rootDir);
+                command.FileName = SetVariables(command.FileName, rootDir);
+                command.Name = SetVariables(command.Name, rootDir);
+                command.WorkingDirectory = SetVariables(command.WorkingDirectory, rootDir);
+
                 string cwd = command.WorkingDirectory ?? rootDir;
 
                 // Add zero width space
