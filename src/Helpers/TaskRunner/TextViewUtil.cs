@@ -27,7 +27,7 @@ namespace ProjectTaskRunner.Helpers
 
         private static IEnumerable<IVsWindowFrame> EnumerateDocumentWindowFrames()
         {
-            IVsUIShell shell = Package.GetGlobalService(typeof(SVsUIShell)) as IVsUIShell;
+            var shell = Package.GetGlobalService(typeof(SVsUIShell)) as IVsUIShell;
 
             if (shell != null)
             {
@@ -37,7 +37,7 @@ namespace ProjectTaskRunner.Helpers
 
                 if (hr == VSConstants.S_OK && framesEnum != null)
                 {
-                    IVsWindowFrame[] frames = new IVsWindowFrame[1];
+                    var frames = new IVsWindowFrame[1];
                     uint fetched;
 
                     while (framesEnum.Next(1, frames, out fetched) == VSConstants.S_OK && fetched == 1)

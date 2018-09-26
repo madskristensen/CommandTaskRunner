@@ -88,7 +88,7 @@ namespace ProjectTaskRunner.Helpers
                 return false;
             }
 
-            LINEDATA[] lineData = new LINEDATA[1];
+            var lineData = new LINEDATA[1];
             textLines.GetLineData(lineNumber, lineData, null);
             if (lineData[0].iEolType != EOLTYPE.eolNONE)
             {
@@ -100,7 +100,7 @@ namespace ProjectTaskRunner.Helpers
 
         public string ReadAllText()
         {
-            StringBuilder text = new StringBuilder();
+            var text = new StringBuilder();
             string line;
             while (TryReadLine(out line))
             {
@@ -127,7 +127,7 @@ namespace ProjectTaskRunner.Helpers
 
             object editPointObject;
             hr = textLines.CreateEditPoint(range.LineNumber, range.LineRange.Start, out editPointObject);
-            EditPoint editPoint = editPointObject as EditPoint;
+            var editPoint = editPointObject as EditPoint;
 
             if (hr != VSConstants.S_OK || editPoint == null)
             {
@@ -146,7 +146,7 @@ namespace ProjectTaskRunner.Helpers
             int oldStartLine, oldStartLineOffset, oldEndLine, oldEndLineOffset;
             _view.GetSelection(out oldStartLine, out oldStartLineOffset, out oldEndLine, out oldEndLineOffset);
             _view.SetSelection(startLine, startLineOffset, endLine, endLineOffset);
-            IOleCommandTarget target = (IOleCommandTarget) ServiceProvider.GlobalProvider.GetService(typeof (SUIHostCommandDispatcher));
+            var target = (IOleCommandTarget) ServiceProvider.GlobalProvider.GetService(typeof (SUIHostCommandDispatcher));
             Guid cmdid = VSConstants.VSStd2K;
             int hr = _view.SendExplicitFocus();
             hr = target.Exec(ref cmdid, (uint) VSConstants.VSStd2KCmdID.FORMATSELECTION, 0, IntPtr.Zero, IntPtr.Zero);

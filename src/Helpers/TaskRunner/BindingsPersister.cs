@@ -33,13 +33,13 @@ namespace ProjectTaskRunner.Helpers
             }
 
             string fileText = textUtil.ReadAllText();
-            JObject body = JObject.Parse(fileText);
+            var body = JObject.Parse(fileText);
 
-            JObject bindings = body[BindingsName] as JObject;
+            var bindings = body[BindingsName] as JObject;
 
             if (bindings != null)
             {
-                XElement bindingsElement = XElement.Parse("<binding />");
+                var bindingsElement = XElement.Parse("<binding />");
 
                 foreach (JProperty property in bindings.Properties())
                 {
@@ -63,13 +63,13 @@ namespace ProjectTaskRunner.Helpers
         {
             bindingsXml = bindingsXml.Replace("\u200B", string.Empty);
 
-            XElement bindingsXmlObject = XElement.Parse(bindingsXml);
-            JObject bindingsXmlBody = JObject.Parse(@"{}");
+            var bindingsXmlObject = XElement.Parse(bindingsXml);
+            var bindingsXmlBody = JObject.Parse(@"{}");
             bool anyAdded = false;
 
             foreach (XAttribute attribute in bindingsXmlObject.Attributes())
             {
-                JArray type = new JArray();
+                var type = new JArray();
                 bindingsXmlBody[attribute.Name.LocalName] = type;
                 string[] tasks = attribute.Value.Split(',');
 
@@ -93,7 +93,7 @@ namespace ProjectTaskRunner.Helpers
             }
 
             string currentContents = textUtil.ReadAllText();
-            JObject fileModel = JObject.Parse(currentContents);
+            var fileModel = JObject.Parse(currentContents);
             bool commaRequired = fileModel.Properties().Any();
             JProperty currentBindings = fileModel.Property(BindingsName);
             bool insert = currentBindings == null;

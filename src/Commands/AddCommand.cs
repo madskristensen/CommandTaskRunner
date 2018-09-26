@@ -21,8 +21,11 @@ namespace CommandTaskRunner
             _dte = dte;
 
             var cmdAddCommand = new CommandID(PackageGuids.guidCommandCmdSet, PackageIds.AddCommandId);
-            var addCommandItem = new OleMenuCommand(AddCommandToFile, cmdAddCommand);
-            addCommandItem.BeforeQueryStatus += BeforeQueryStatus;
+            var addCommandItem = new OleMenuCommand(AddCommandToFile, cmdAddCommand)
+            {
+                Supported = false
+            };
+
             commandService.AddCommand(addCommandItem);
         }
 
@@ -31,7 +34,7 @@ namespace CommandTaskRunner
             get; private set;
         }
 
-        public static async task Initialize(AsyncPackage package)
+        public static async task InitializeAsync(AsyncPackage package)
         {
             var commandService = await package.GetServiceAsync(typeof(IMenuCommandService)) as OleMenuCommandService;
             var dte = await package.GetServiceAsync(typeof(DTE)) as DTE2;
@@ -39,25 +42,11 @@ namespace CommandTaskRunner
             Instance = new AddCommand(commandService, dte);
         }
 
-        private void BeforeQueryStatus(object sender, EventArgs e)
-        {
-            OleMenuCommand button = (OleMenuCommand)sender;
-            button.Enabled = button.Visible = false;
-
-            var item = ProjectHelpers.GetSelectedItems().FirstOrDefault();
-
-            if (item == null || item.FileCount == 0)
-                return;
-
-            string file = item.FileNames[1];
-
-            button.Enabled = button.Visible = CommandHelpers.IsFileSupported(file);
-        }
-
         private void AddCommandToFile(object sender, EventArgs e)
         {
-            OleMenuCommand button = (OleMenuCommand)sender;
-            var item = ProjectHelpers.GetSelectedItems().FirstOrDefault();
+            ThreadHelper.ThrowIfNotOnUIThread();
+            var button = (OleMenuCommand)sender;
+            ProjectItem item = ProjectHelpers.GetSelectedItems().FirstOrDefault();
 
             if (item == null || item.FileCount == 0)
                 return;
@@ -86,6 +75,8 @@ namespace CommandTaskRunner
 
         private void AddFileToProject(ProjectItem item, bool isSolution, string configPath)
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
+
             if (_dte.Solution.FindProjectItem(configPath) != null)
                 return;
 
@@ -93,7 +84,7 @@ namespace CommandTaskRunner
 
             if (isSolution && item.Kind != EnvDTE.Constants.vsProjectItemKindSolutionItems)
             {
-                Solution2 solution = (Solution2)_dte.Solution;
+                var solution = (Solution2)_dte.Solution;
 
                 foreach (Project project in solution.Projects)
                 {
@@ -115,6 +106,7 @@ namespace CommandTaskRunner
 
         private string GetConfigPath(ProjectItem item, out bool isSolution)
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
             isSolution = false;
 
             // Solution items always goes into the solution
@@ -139,7 +131,7 @@ namespace CommandTaskRunner
                 return configPath;
 
             string message = "Do you want to configure the task runner on the solution level?\r\rIf not, it will be configured on the project";
-            var result = MessageBox.Show(message, Vsix.Name, MessageBoxButton.YesNo, MessageBoxImage.Question);
+            MessageBoxResult result = MessageBox.Show(message, Vsix.Name, MessageBoxButton.YesNo, MessageBoxImage.Question);
 
             if (result == MessageBoxResult.Yes)
             {
@@ -156,8 +148,10 @@ namespace CommandTaskRunner
 
         private void OpenTaskRunnerExplorer()
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
+
             string vsCommandName = "View.TaskRunnerExplorer";
-            var vsCommand = _dte.Commands.Item(vsCommandName);
+            Command vsCommand = _dte.Commands.Item(vsCommandName);
 
             if (vsCommand != null && vsCommand.IsAvailable)
                 _dte.ExecuteCommand(vsCommandName);

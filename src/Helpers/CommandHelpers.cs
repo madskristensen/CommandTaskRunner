@@ -38,7 +38,7 @@ namespace CommandTaskRunner
             else
                 root = JObject.Parse("{ \"commands\": {}  }");
 
-            var commands = root["commands"];
+            JToken commands = root["commands"];
 
             if (commands == null)
                 root.Add("commands", JObject.Parse("{}"));
@@ -48,7 +48,7 @@ namespace CommandTaskRunner
 
         private static void AddCommandToRoot(string file, string configPath, JObject root)
         {
-            JObject command = (JObject)root["commands"];
+            var command = (JObject)root["commands"];
 
             var cmd = new
             {
@@ -96,8 +96,8 @@ namespace CommandTaskRunner
 
         public static string MakeRelative(string baseFile, string file)
         {
-            Uri baseUri = new Uri(baseFile, UriKind.RelativeOrAbsolute);
-            Uri fileUri = new Uri(file, UriKind.RelativeOrAbsolute);
+            var baseUri = new Uri(baseFile, UriKind.RelativeOrAbsolute);
+            var fileUri = new Uri(file, UriKind.RelativeOrAbsolute);
 
             return Uri.UnescapeDataString(baseUri.MakeRelativeUri(fileUri).ToString());
         }

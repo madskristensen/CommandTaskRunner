@@ -25,7 +25,7 @@ namespace ProjectTaskRunner.Helpers
 
             string fileContents = File.ReadAllText(_filename);
 
-            using (StringReader reader = new StringReader(fileContents))
+            using (var reader = new StringReader(fileContents))
             using (TextWriter writer = new StreamWriter(File.Open(_filename, FileMode.Create)))
             {
                 int remainingCharacters = range.LineRange.Length;
@@ -63,7 +63,7 @@ namespace ProjectTaskRunner.Helpers
 
             string fileContents = File.ReadAllText(_filename);
 
-            using (StringReader reader = new StringReader(fileContents))
+            using (var reader = new StringReader(fileContents))
             using (TextWriter writer = new StreamWriter(File.Open(_filename, FileMode.Create)))
             {
                 string lineText;

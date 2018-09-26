@@ -32,11 +32,11 @@ namespace CommandTaskRunner
             if (!_documentFactory.TryGetTextDocument(_view.TextDataModel.DocumentBuffer, out document))
                 return DragDropPointerEffects.None;
 
-            var snapshot = _view.TextBuffer.CurrentSnapshot;
+            ITextSnapshot snapshot = _view.TextBuffer.CurrentSnapshot;
             string bufferContent = snapshot.GetText();
-            var json = CommandHelpers.GetJsonContent(document.FilePath, _fileName, bufferContent);
+            Newtonsoft.Json.Linq.JObject json = CommandHelpers.GetJsonContent(document.FilePath, _fileName, bufferContent);
 
-            using (var edit = _view.TextBuffer.CreateEdit())
+            using (ITextEdit edit = _view.TextBuffer.CreateEdit())
             {
                 edit.Replace(0, snapshot.Length, json.ToString());
                 edit.Apply();
@@ -66,7 +66,7 @@ namespace CommandTaskRunner
 
         private static string GetImageFilename(DragDropInfo info)
         {
-            DataObject data = new DataObject(info.Data);
+            var data = new DataObject(info.Data);
 
             if (info.Data.GetDataPresent("FileDrop"))
             {

@@ -10,18 +10,18 @@ namespace CommandTaskRunner
     {
         public static IEnumerable<CommandTask> LoadTasks(string configPath)
         {
-            List<CommandTask> list = new List<CommandTask>();
+            var list = new List<CommandTask>();
 
             try
             {
                 string document = File.ReadAllText(configPath);
-                JObject root = JObject.Parse(document);
+                var root = JObject.Parse(document);
 
-                var commandNode = root["commands"];
+                JToken commandNode = root["commands"];
 
-                foreach (var child in commandNode.Children<JProperty>())
+                foreach (JProperty child in commandNode.Children<JProperty>())
                 {
-                    var command = JsonConvert.DeserializeObject<CommandTask>(child.Value.ToString());
+                    CommandTask command = JsonConvert.DeserializeObject<CommandTask>(child.Value.ToString());
                     command.Name = child.Name;
                     command.WorkingDirectory = MakeAbsolute(configPath, command.WorkingDirectory);
                     list.Add(command);

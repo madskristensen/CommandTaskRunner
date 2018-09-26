@@ -19,7 +19,7 @@ namespace CommandTaskRunner
             if (_dte.SourceControl.IsItemUnderSCC(file) && !_dte.SourceControl.IsItemCheckedOut(file))
                 _dte.SourceControl.CheckOutItem(file);
 
-            FileInfo info = new FileInfo(file);
+            var info = new FileInfo(file);
             info.IsReadOnly = false;
         }
 
@@ -29,7 +29,7 @@ namespace CommandTaskRunner
 
             foreach (UIHierarchyItem selItem in items)
             {
-                ProjectItem item = selItem.Object as ProjectItem;
+                var item = selItem.Object as ProjectItem;
 
                 if (item != null)
                     yield return item;

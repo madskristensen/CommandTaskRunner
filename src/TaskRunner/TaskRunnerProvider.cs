@@ -88,7 +88,7 @@ namespace CommandTaskRunner
                 return new TaskRunnerConfig(this, context, hierarchy, _icon);
             });
         }
-        
+
         private void ApplyVariable(string key, string value, ref string str)
         {
             str = str.Replace(key, value);
@@ -101,12 +101,12 @@ namespace CommandTaskRunner
 
             var dte = (DTE)_serviceProvider.GetService(typeof(DTE));
 
-            var sln = dte.Solution;
-            var projs = sln.Projects;
-            var build = sln.SolutionBuild;
+            Solution sln = dte.Solution;
+            Projects projs = sln.Projects;
+            SolutionBuild build = sln.SolutionBuild;
             var slnCfg = (SolutionConfiguration2)build.ActiveConfiguration;
 
-            var proj = projs.Cast<Project>().FirstOrDefault(x => x.FileName.Contains(cmdsDir));
+            Project proj = projs.Cast<Project>().FirstOrDefault(x => x.FileName.Contains(cmdsDir));
 
             ApplyVariable("$(ConfigurationName)", slnCfg.Name, ref str);
             ApplyVariable("$(DevEnvDir)", Path.GetDirectoryName(dte.FileName), ref str);
@@ -120,14 +120,14 @@ namespace CommandTaskRunner
 
             if (proj != null)
             {
-                var projCfg = proj.ConfigurationManager.ActiveConfiguration;
+                Configuration projCfg = proj.ConfigurationManager.ActiveConfiguration;
 
-                var outDir = (string)projCfg.Properties.Item("OutputPath").Value;
+                string outDir = (string)projCfg.Properties.Item("OutputPath").Value;
 
-                var projectDir = Path.GetDirectoryName(proj.FileName);
-                var targetFilename = (string)proj.Properties.Item("OutputFileName").Value;
-                var targetPath = Path.Combine(projectDir, outDir, targetFilename);
-                var targetDir = Path.Combine(projectDir, outDir);
+                string projectDir = Path.GetDirectoryName(proj.FileName);
+                string targetFilename = (string)proj.Properties.Item("OutputFileName").Value;
+                string targetPath = Path.Combine(projectDir, outDir, targetFilename);
+                string targetDir = Path.Combine(projectDir, outDir);
 
                 ApplyVariable("$(OutDir)", outDir, ref str);
 
@@ -151,12 +151,12 @@ namespace CommandTaskRunner
         {
             ITaskRunnerNode root = new TaskRunnerNode(Constants.TASK_CATEGORY);
             string rootDir = Path.GetDirectoryName(configPath);
-            var commands = TaskParser.LoadTasks(configPath);
+            IEnumerable<CommandTask> commands = TaskParser.LoadTasks(configPath);
 
             if (commands == null)
                 return root;
 
-            TaskRunnerNode tasks = new TaskRunnerNode("Commands");
+            var tasks = new TaskRunnerNode("Commands");
             tasks.Description = "A list of command to execute";
             root.Children.Add(tasks);
 
@@ -173,7 +173,7 @@ namespace CommandTaskRunner
                 string commandName = command.Name += "\u200B";
                 SetDynamicTaskName(commandName);
 
-                TaskRunnerNode task = new TaskRunnerNode(commandName, true)
+                var task = new TaskRunnerNode(commandName, true)
                 {
                     Command = new TaskRunnerCommand(cwd, command.FileName, command.Arguments),
                     Description = $"Filename:\t {command.FileName}\r\nArguments:\t {command.Arguments}"
