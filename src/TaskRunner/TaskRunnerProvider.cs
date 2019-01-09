@@ -118,30 +118,34 @@ namespace CommandTaskRunner
             ApplyVariable("$(SolutionName)", Path.GetFileNameWithoutExtension(sln.FileName), ref str);
             ApplyVariable("$(SolutionPath)", sln.FileName, ref str);
 
-            if (proj != null)
+
+            if (proj != null && proj.ConfigurationManager != null) // some types of projects (TwinCat) can have null ConfigurationManager
             {
                 Configuration projCfg = proj.ConfigurationManager.ActiveConfiguration;
 
-                string outDir = (string)projCfg.Properties.Item("OutputPath").Value;
+                if (projCfg.Properties != null) // website folder projects (File -> Add -> Existing Web Site) have null properties
+                {
+                    string outDir = (string)projCfg.Properties.Item("OutputPath").Value;
 
-                string projectDir = Path.GetDirectoryName(proj.FileName);
-                string targetFilename = (string)proj.Properties.Item("OutputFileName").Value;
-                string targetPath = Path.Combine(projectDir, outDir, targetFilename);
-                string targetDir = Path.Combine(projectDir, outDir);
+                    string projectDir = Path.GetDirectoryName(proj.FileName);
+                    string targetFilename = (string)proj.Properties.Item("OutputFileName").Value;
+                    string targetPath = Path.Combine(projectDir, outDir, targetFilename);
+                    string targetDir = Path.Combine(projectDir, outDir);
 
-                ApplyVariable("$(OutDir)", outDir, ref str);
+                    ApplyVariable("$(OutDir)", outDir, ref str);
 
-                ApplyVariable("$(ProjectDir)", projectDir, ref str);
-                ApplyVariable("$(ProjectExt)", Path.GetExtension(proj.FileName), ref str);
-                ApplyVariable("$(ProjectFileName)", Path.GetFileName(proj.FileName), ref str);
-                ApplyVariable("$(ProjectName)", proj.Name, ref str);
-                ApplyVariable("$(ProjectPath)", proj.FileName, ref str);
+                    ApplyVariable("$(ProjectDir)", projectDir, ref str);
+                    ApplyVariable("$(ProjectExt)", Path.GetExtension(proj.FileName), ref str);
+                    ApplyVariable("$(ProjectFileName)", Path.GetFileName(proj.FileName), ref str);
+                    ApplyVariable("$(ProjectName)", proj.Name, ref str);
+                    ApplyVariable("$(ProjectPath)", proj.FileName, ref str);
 
-                ApplyVariable("$(TargetDir)", targetDir, ref str);
-                ApplyVariable("$(TargetExt)", Path.GetExtension(targetFilename), ref str);
-                ApplyVariable("$(TargetFileName)", targetFilename, ref str);
-                ApplyVariable("$(TargetName)", proj.Name, ref str);
-                ApplyVariable("$(TargetPath)", targetPath, ref str);
+                    ApplyVariable("$(TargetDir)", targetDir, ref str);
+                    ApplyVariable("$(TargetExt)", Path.GetExtension(targetFilename), ref str);
+                    ApplyVariable("$(TargetFileName)", targetFilename, ref str);
+                    ApplyVariable("$(TargetName)", proj.Name, ref str);
+                    ApplyVariable("$(TargetPath)", targetPath, ref str);
+                }
             }
 
             return str;
