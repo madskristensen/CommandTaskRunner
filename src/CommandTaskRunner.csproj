@@ -98,6 +98,7 @@
     <Content Include="Resources\preview.png">
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
+    <None Include=".editorconfig" />
     <None Include="packages.config" />
     <None Include="source.extension.vsixmanifest">
       <SubType>Designer</SubType>
