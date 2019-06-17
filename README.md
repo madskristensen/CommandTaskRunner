@@ -86,7 +86,8 @@ with Visual Studio events such as "After build" etc.
 
 ![Visual Studio bindings](art/bindings.png)
 
-##Limitations
+## Limitations
+
 Some projects (vcxproj (C++ and C++/cli projects), website folder projects, TwinCAT projects, etc.) do not propagate some properties regarding solution and project configuration that are needed by this extension. If there are no .NET project in the solution, this extension may not work at it's full capacity. At the moment, this extension works best with .NET projects.
 
 ## Open Command Line
