@@ -106,7 +106,7 @@ namespace CommandTaskRunner
             SolutionBuild build = sln.SolutionBuild;
             var slnCfg = (SolutionConfiguration2)build.ActiveConfiguration;
 
-            Project proj = projs.Cast<Project>().FirstOrDefault(x => x.FileName.Contains(cmdsDir) && !x.FullName.EndsWith("vcxproj"));
+            Project proj = projs.Cast<Project>().FirstOrDefault(x => x.FileName.Contains(cmdsDir));
 
             ApplyVariable("$(ConfigurationName)", slnCfg.Name, ref str);
             ApplyVariable("$(DevEnvDir)", Path.GetDirectoryName(dte.FileName), ref str);
