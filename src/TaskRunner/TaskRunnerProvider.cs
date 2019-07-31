@@ -94,7 +94,7 @@ namespace CommandTaskRunner
             str = str.Replace(key, value);
         }
 
-        private string SetVariables(string str, string cmdsDir)
+        public string SetVariables(string str, string cmdsDir)
         {
             if (str == null)
                 return str;
@@ -166,8 +166,6 @@ namespace CommandTaskRunner
 
             foreach (CommandTask command in commands.OrderBy(k => k.Name))
             {
-                command.Arguments = SetVariables(command.Arguments, rootDir);
-                command.FileName = SetVariables(command.FileName, rootDir);
                 command.Name = SetVariables(command.Name, rootDir);
                 command.WorkingDirectory = SetVariables(command.WorkingDirectory, rootDir);
 
@@ -177,9 +175,8 @@ namespace CommandTaskRunner
                 string commandName = command.Name += "\u200B";
                 SetDynamicTaskName(commandName);
 
-                var task = new TaskRunnerNode(commandName, true)
-                {
-                    Command = new TaskRunnerCommand(cwd, command.FileName, command.Arguments),
+                var task = new TaskRunnerNode(commandName, true) {
+                    Command = new DynamicTaskRunnerCommand(this, rootDir, cwd, command.FileName, command.Arguments),
                     Description = $"Filename:\t {command.FileName}\r\nArguments:\t {command.Arguments}"
                 };
 
