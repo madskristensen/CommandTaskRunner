@@ -148,6 +148,9 @@ namespace CommandTaskRunner
                 }
             }
 
+            if (proj != null)
+                MSBuildProject.SetVariables(proj.FileName, ref str);
+
             return str;
         }
 
