@@ -8,13 +8,8 @@ namespace ProjectTaskRunner.Helpers
     {
         private ImageSource _rootNodeIcon;
 
-        public TaskRunnerConfig(TaskRunnerProvider provider, ITaskRunnerCommandContext context, ITaskRunnerNode hierarchy)
-            : base(provider, context, hierarchy)
-        {
-        }
-
-        public TaskRunnerConfig(TaskRunnerProvider provider, ITaskRunnerCommandContext context, ITaskRunnerNode hierarchy, ImageSource rootNodeIcon)
-            : this(provider, context, hierarchy)
+        public TaskRunnerConfig(ITaskRunnerNode hierarchy, ImageSource rootNodeIcon)
+            : base(hierarchy)
         {
             _rootNodeIcon = rootNodeIcon;
         }

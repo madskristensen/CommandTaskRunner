@@ -10,13 +10,9 @@ namespace ProjectTaskRunner.Helpers
 {
     internal class BindingsPersister
     {
-        private const string BindingsName = CommandTaskRunner.Constants.ELEMENT_NAME;
-        private TaskRunnerProvider _provider;
+        private const string BindingsName = Constants.ELEMENT_NAME;
 
-        public BindingsPersister(TaskRunnerProvider provider)
-        {
-            _provider = provider;
-        }
+        public BindingsPersister() { }
 
         public string Load(string configPath)
         {
@@ -45,11 +41,6 @@ namespace ProjectTaskRunner.Helpers
                 {
                     string[] tasks = property.Value.Values<string>().ToArray();
 
-                    for(int i = 0; i < tasks.Length; ++i)
-                    {
-                        tasks[i] = _provider.GetDynamicName(tasks[i]);
-                    }
-
                     bindingsElement.SetAttributeValue(property.Name, string.Join(",", tasks));
                 }
 
@@ -61,8 +52,6 @@ namespace ProjectTaskRunner.Helpers
 
         public bool Save(string configPath, string bindingsXml)
         {
-            bindingsXml = bindingsXml.Replace("\u200B", string.Empty);
-
             var bindingsXmlObject = XElement.Parse(bindingsXml);
             var bindingsXmlBody = JObject.Parse(@"{}");
             bool anyAdded = false;
