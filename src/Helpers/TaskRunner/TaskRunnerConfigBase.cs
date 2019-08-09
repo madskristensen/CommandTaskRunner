@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Windows.Media;
-using CommandTaskRunner;
 using Microsoft.VisualStudio.TaskRunnerExplorer;
 
 namespace ProjectTaskRunner.Helpers
@@ -9,13 +8,11 @@ namespace ProjectTaskRunner.Helpers
     {
         private static ImageSource SharedIcon;
         private BindingsPersister _bindingsPersister;
-        private ITaskRunnerCommandContext _context;
 
-        protected TaskRunnerConfigBase(TaskRunnerProvider provider, ITaskRunnerCommandContext context, ITaskRunnerNode hierarchy)
+        protected TaskRunnerConfigBase(ITaskRunnerNode hierarchy)
         {
-            _bindingsPersister = new BindingsPersister(provider);
+            _bindingsPersister = new BindingsPersister();
             TaskHierarchy = hierarchy;
-            _context = context;
         }
 
         /// <summary>
