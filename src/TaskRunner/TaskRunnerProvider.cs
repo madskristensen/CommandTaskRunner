@@ -38,7 +38,8 @@ namespace CommandTaskRunner
         {
             return await Task.Run(() =>
             {
-                ITaskRunnerNode hierarchy = LoadHierarchy(configPath);
+                var userPathConfig = configPath.Replace(Constants.FILENAME, Constants.USERFILENAME);
+                ITaskRunnerNode hierarchy = LoadHierarchy(configPath, userPathConfig);
 
                 if (!hierarchy.Children.Any() && !hierarchy.Children.First().Children.Any())
                     return null;
@@ -112,17 +113,26 @@ namespace CommandTaskRunner
             return str;
         }
 
-        private ITaskRunnerNode LoadHierarchy(string configPath)
+        private ITaskRunnerNode LoadHierarchy(string configPath, string userConfigPath)
         {
             ITaskRunnerNode root = new TaskRunnerNode(Constants.TASK_CATEGORY);
+
+            AppendCommands(ref root, configPath, "Commands", "A list of commands to execute");
+            AppendCommands(ref root, userConfigPath, "User Commands", "A list of user commands to execute");
+            
+            return root;
+        }
+
+        private void AppendCommands(ref ITaskRunnerNode root, string configPath, string name, string description)
+        {
             string rootDir = Path.GetDirectoryName(configPath);
             IEnumerable<CommandTask> commands = TaskParser.LoadTasks(configPath);
 
             if (commands == null)
-                return root;
+                return;
 
-            var tasks = new TaskRunnerNode("Commands");
-            tasks.Description = "A list of command to execute";
+            var tasks = new TaskRunnerNode(name);
+            tasks.Description = description;
             root.Children.Add(tasks);
 
             foreach (CommandTask command in commands.OrderBy(k => k.Name))
@@ -142,9 +152,8 @@ namespace CommandTaskRunner
 
                 tasks.Children.Add(task);
             }
-
-            return root;
         }
+
         private IList<Project> GetProjects(DTE dte)
         {
             Projects projects = dte.Solution.Projects;
