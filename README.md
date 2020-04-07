@@ -50,6 +50,9 @@ Task Runner Explorer will try to find a `commands.json` file
 in any parent folder to either the individual projects or
 the solution until it hits the root of the drive.
 
+You can also add a "commands.user.json" file if you need local, user specific commands. This file follows the same schema as the "commands.json" file. Any commands added to this file will appear under a "User Commands" group.
+
+
 ## Commands
 
 Inside commands.json it is possible to add custom scripts inside
