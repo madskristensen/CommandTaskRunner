@@ -7,8 +7,8 @@ namespace CommandTaskRunner
 {
     internal sealed partial class Vsix
     {
-        public const string Id = "fc1aafb2-321e-41bd-ac37-03b09ea8ef31";
-        public const string Name = "Command Task Runner";
+        public const string Id = "fc1aafb2-321e-41bd-ac37-03b09ea8ef32";
+        public const string Name = "Command Task Runner (64-bit)";
         public const string Description = @"Adds support for command line batch files in Visual Studio 2015's Task Runner Explorer. Supports .cmd, .bat, .ps1 and .psm1 files.";
         public const string Language = "en-US";
         public const string Version = "1.3";
