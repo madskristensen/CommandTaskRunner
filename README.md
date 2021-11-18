@@ -6,9 +6,9 @@ Task Runner Explorer. Supports `.exe`, `.cmd`, `.bat`, `.ps1` and `.psm1` files.
 [![Build status](https://ci.appveyor.com/api/projects/status/grreswaawyla0j6c?svg=true)](https://ci.appveyor.com/project/madskristensen/commandtaskrunner)
 
 Download the extension at the
-[VS Gallery](https://visualstudiogallery.msdn.microsoft.com/e6bf6a3d-7411-4494-8a1e-28c1a8c4ce99)
+[VS Marketplace](https://marketplace.visualstudio.com/items?itemName=MadsKristensen.CommandTaskRunner64)
 or get the
-[nightly build](http://vsixgallery.com/extension/fc1aafb2-321e-41bd-ac37-03b09ea8ef31/)
+[nightly build](http://vsixgallery.com/extension/fc1aafb2-321e-41bd-ac37-03b09ea8ef32/)
 
 ## Add commands
 
@@ -99,16 +99,6 @@ For the optimal experience with batch file and Visual Studio, try
 the free
 [Open Command Line](https://visualstudiogallery.msdn.microsoft.com/4e84e2cf-2d6b-472a-b1e2-b84932511379)
 extension for even more features.
-
-## Contribute
-Check out the [contribution guidelines](.github/CONTRIBUTING.md)
-if you want to contribute to this project.
-
-For cloning and building this project yourself, make sure
-to install the
-[Extensibility Tools 2015](https://visualstudiogallery.msdn.microsoft.com/ab39a092-1343-46e2-b0f1-6a3f91155aa6)
-extension for Visual Studio which enables some features
-used by this project.
 
 ## License
 [Apache 2.0](LICENSE)
